@@ -29,6 +29,7 @@ public class TestProdCons extends Simulateur {
 	protected void run() throws Exception {
 		// le corps de votre programme principal
 		init("jus/poc/prodcons/options/options.xml");
+		System.out.println("Coucou");
 		
 	}
 
