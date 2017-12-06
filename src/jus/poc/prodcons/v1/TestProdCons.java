@@ -2,10 +2,9 @@ package jus.poc.prodcons.v1;
 
 import java.util.Properties;
 
-
+import jus.poc.prodcons.ControlException;
 import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons.Simulateur;
-import jus.poc.prodcons.Acteur;
 import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Map;
@@ -22,32 +21,38 @@ public class TestProdCons extends Simulateur {
 	protected int deviationNombreMoyenDeProduction;
 	protected int nombreMoyenNbExemplaire;
 	protected int deviationNombreMoyenNbExemplaire;
+	
+	protected Observateur ob;
 
 	public TestProdCons(Observateur observateur) {
 		super(observateur);
+		ob=observateur;
 	}
 
 	protected void run() throws Exception {
 		// le corps de votre programme principal
+
+		// On récupère les variable dans un fichier xml
 		init("jus/poc/prodcons/options/options.xml");
-		
+
 		Consommateur cons[] = new Consommateur[nbCons];
-		
+
 		Producteur prod[] = new Producteur[nbProd];
-		
-		ProdCons buffer= new ProdCons();
-		
-		Observateur observ= new Observateur();
-		
-		for(int i=0; i < nbCons;i++){
-			cons[i]=new Consommateur(observ,tempsMoyenConsommation,deviationTempsMoyenConsommation,buffer);
+
+
+		// TODO modifier le 10 avec une capacité récupéré
+		ProdCons buffer = new ProdCons(ob, 10);
+
+		// On créer les consommateurs
+		for (int i = 0; i < nbCons; i++) {
+			cons[i] = new Consommateur(ob, tempsMoyenConsommation, deviationTempsMoyenConsommation, buffer);
 		}
-		
-		for(int i=0; i < nbProd;i++){
-			prod[i]=new Producteur(observ,tempsMoyenProduction,deviationTempsMoyenProduction,buffer);
+
+		// On créer les producteurs
+		for (int i = 0; i < nbProd; i++) {
+			prod[i] = new Producteur(ob, tempsMoyenProduction, deviationTempsMoyenProduction, buffer,
+					nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 		}
-		
-		
 
 	}
 
