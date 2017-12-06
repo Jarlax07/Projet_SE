@@ -6,7 +6,11 @@ import jus.poc.prodcons._Producteur;
 import jus.poc.prodcons.Message;
 import jus.poc.prodcons.Observateur;
 
-public class ProdCons implements Tampon{
+public class ProdCons implements Tampon {
+
+	public ProdCons() {
+
+	}
 
 	@Override
 	public int enAttente() {
@@ -31,5 +35,6 @@ public class ProdCons implements Tampon{
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 
 }

@@ -2,9 +2,10 @@ package jus.poc.prodcons.v1;
 
 import java.util.Properties;
 
+
 import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons.Simulateur;
-
+import jus.poc.prodcons.Acteur;
 import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Map;
@@ -29,8 +30,25 @@ public class TestProdCons extends Simulateur {
 	protected void run() throws Exception {
 		// le corps de votre programme principal
 		init("jus/poc/prodcons/options/options.xml");
-		System.out.println("Coucou");
 		
+		Consommateur cons[] = new Consommateur[nbCons];
+		
+		Producteur prod[] = new Producteur[nbProd];
+		
+		ProdCons buffer= new ProdCons();
+		
+		Observateur observ= new Observateur();
+		
+		for(int i=0; i < nbCons;i++){
+			cons[i]=new Consommateur(observ,tempsMoyenConsommation,deviationTempsMoyenConsommation,buffer);
+		}
+		
+		for(int i=0; i < nbProd;i++){
+			prod[i]=new Producteur(observ,tempsMoyenProduction,deviationTempsMoyenProduction,buffer);
+		}
+		
+		
+
 	}
 
 	public static void main(String[] args) {
