@@ -29,6 +29,7 @@ public class TestProdCons extends Simulateur {
 		ob=observateur;
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void run() throws Exception {
 		// le corps de votre programme principal
 
@@ -38,7 +39,8 @@ public class TestProdCons extends Simulateur {
 		Consommateur cons[] = new Consommateur[nbCons];
 
 		Producteur prod[] = new Producteur[nbProd];
-
+		
+		boolean fini=false;
 
 		// TODO modifier le 10 avec une capacité récupéré
 		ProdCons buffer = new ProdCons(ob, 10);
@@ -46,16 +48,46 @@ public class TestProdCons extends Simulateur {
 		// On créer les consommateurs
 		for (int i = 0; i < nbCons; i++) {
 			cons[i] = new Consommateur(ob, tempsMoyenConsommation, deviationTempsMoyenConsommation, buffer);
+			cons[i].start();
 		}
 
 		// On créer les producteurs
 		for (int i = 0; i < nbProd; i++) {
 			prod[i] = new Producteur(ob, tempsMoyenProduction, deviationTempsMoyenProduction, buffer,
 					nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
+			prod[i].start();
+		}
+		
+		while(!fini){
+			if(sum_prod(prod,nbProd)==sum_cons(cons,nbCons)){
+				fini=true;
+				for(int i = 0; i< nbCons;i++){
+					cons[i].stop();
+				}
+				for(int i =0 ; i<nbProd;i++){
+					prod[i].stop();
+				}
+			}
 		}
 
 	}
-
+	
+	public int sum_prod(Producteur p[],int taille){
+		int somme=0;
+		for(int i=0; i<taille;i++){
+			somme += p[i].nombreDeMessages();
+		}
+		return somme;
+	}
+	
+	public int sum_cons(Consommateur c[],int taille){
+		int somme=0;
+		for(int i=0; i<taille;i++){
+			somme += c[i].nombreDeMessages();
+		}
+		return somme;
+	}
+	
 	public static void main(String[] args) {
 		new TestProdCons(new Observateur()).start();
 	}

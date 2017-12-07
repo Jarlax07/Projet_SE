@@ -26,19 +26,23 @@ public class Consommateur extends Acteur implements _Consommateur {
 
 	//Mettre consommateur dans un thread ?
 	public void run() {
-		System.out.println("Coucou");
+		
+		
 		Message msg;
-		try {
-			msg = buffer.get(this);
-			nbmsg++;
-			System.out.println(msg);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		while(true){
+			try {
+				msg = buffer.get(this);
+				nbmsg++;
+				System.out.println(msg);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		
 		
 		
 	}

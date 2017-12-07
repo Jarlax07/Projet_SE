@@ -14,7 +14,7 @@ public class ProdCons implements Tampon {
 	private Observateur ob;
 	private int capacity;
 
-	private ArrayBlockingQueue<Message> buffer;
+	private ArrayBlockingQueue<Message> buffer; //FIFO
 
 	public ProdCons(Observateur ob, int capacity) {
 		this.ob = ob;
@@ -23,17 +23,19 @@ public class ProdCons implements Tampon {
 	}
 
 	@Override
+	//Retourne le nombre de message déjà ajouté dans le tampon
 	public int enAttente() {
 		return buffer.size();
 	}
 
 	@Override
+	//Recupère un message dans le tampon
 	synchronized public Message get(_Consommateur arg0) throws Exception, InterruptedException {
 		// TODO Auto-generated method stub
 		
 		
 		while(!(enAttente()>0)){
-			arg0.wait();
+			wait();
 		}
 		
 		Message msg = buffer.remove();
@@ -43,11 +45,13 @@ public class ProdCons implements Tampon {
 	}
 
 	@Override
+	//Ajoute un message dans le tampon
 	synchronized public void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
 		// TODO Auto-generated method stub
 		
+		//Tant que le buffer est complet, attendre
 		while(!(enAttente() < taille())){
-			arg0.wait();
+			wait();
 		}
 		
 		buffer.add(arg1);
@@ -57,6 +61,7 @@ public class ProdCons implements Tampon {
 	}
 
 	@Override
+	//Capacité maximale du tampon
 	public int taille() {
 		return capacity;
 	}
