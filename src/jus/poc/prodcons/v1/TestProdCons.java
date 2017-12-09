@@ -2,7 +2,6 @@ package jus.poc.prodcons.v1;
 
 import java.util.Properties;
 
-import jus.poc.prodcons.ControlException;
 import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons.Simulateur;
 import java.io.IOException;
@@ -21,15 +20,14 @@ public class TestProdCons extends Simulateur {
 	protected int deviationNombreMoyenDeProduction;
 	protected int nombreMoyenNbExemplaire;
 	protected int deviationNombreMoyenNbExemplaire;
-	
+
 	protected Observateur ob;
 
 	public TestProdCons(Observateur observateur) {
 		super(observateur);
-		ob=observateur;
+		ob = observateur;
 	}
 
-	@SuppressWarnings("deprecation")
 	protected void run() throws Exception {
 		// le corps de votre programme principal
 
@@ -39,55 +37,59 @@ public class TestProdCons extends Simulateur {
 		Consommateur cons[] = new Consommateur[nbCons];
 
 		Producteur prod[] = new Producteur[nbProd];
-		
-		boolean fini=false;
 
 		// TODO modifier le 10 avec une capacité récupéré
 		ProdCons buffer = new ProdCons(ob, 10);
 
-		// On créer les consommateurs
+		// On créer et on démarre les consommateurs
 		for (int i = 0; i < nbCons; i++) {
 			cons[i] = new Consommateur(ob, tempsMoyenConsommation, deviationTempsMoyenConsommation, buffer);
 			cons[i].start();
 		}
 
-		// On créer les producteurs
+		// On créer et on démarre les producteurs
 		for (int i = 0; i < nbProd; i++) {
 			prod[i] = new Producteur(ob, tempsMoyenProduction, deviationTempsMoyenProduction, buffer,
 					nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 			prod[i].start();
 		}
-		
-		while(!fini){
-			if(sum_prod(prod,nbProd)==sum_cons(cons,nbCons)){
-				fini=true;
-				for(int i = 0; i< nbCons;i++){
-					cons[i].stop();
-				}
-				for(int i =0 ; i<nbProd;i++){
-					prod[i].stop();
-				}
-			}
+
+		// On boucle tant que tout ce qui doit etre produit n'a pas était
+		// consommé
+		while (!(sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
+
 		}
 
+		// On reveille les threads en attente et on leur dit que le programme
+		// est terminé
+		try {
+			buffer.reveiller();
+
+		} catch (IllegalMonitorStateException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Fini");
 	}
-	
-	public int sum_prod(Producteur p[],int taille){
-		int somme=0;
-		for(int i=0; i<taille;i++){
+
+	// Calcule la somme des messages a produire par les producteurs
+	public int sum_prod(Producteur p[], int taille) {
+		int somme = 0;
+		for (int i = 0; i < taille; i++) {
 			somme += p[i].nombreDeMessages();
 		}
 		return somme;
 	}
-	
-	public int sum_cons(Consommateur c[],int taille){
-		int somme=0;
-		for(int i=0; i<taille;i++){
+
+	// Calcule la somme des messages déjà consommé par les consommateurs
+	public int sum_cons(Consommateur c[], int taille) {
+		int somme = 0;
+		for (int i = 0; i < taille; i++) {
 			somme += c[i].nombreDeMessages();
 		}
 		return somme;
 	}
-	
+
 	public static void main(String[] args) {
 		new TestProdCons(new Observateur()).start();
 	}
