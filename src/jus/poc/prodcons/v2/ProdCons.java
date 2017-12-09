@@ -1,13 +1,13 @@
 package jus.poc.prodcons.v2;
 
-import jus.poc.prodcons.Tampon;
-import jus.poc.prodcons._Consommateur;
-import jus.poc.prodcons._Producteur;
-
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Semaphore;
 
 import jus.poc.prodcons.Message;
 import jus.poc.prodcons.Observateur;
+import jus.poc.prodcons.Tampon;
+import jus.poc.prodcons._Consommateur;
+import jus.poc.prodcons._Producteur;
 
 public class ProdCons implements Tampon {
 
@@ -16,6 +16,10 @@ public class ProdCons implements Tampon {
 	private boolean fini = false;
 
 	private ArrayBlockingQueue<Message> buffer; // FIFO
+	private Semaphore nonVide = new Semaphore(0); // Condition de consommation
+	private Semaphore nonPlein = new Semaphore(1); // Condition de production
+	private Semaphore mutex = new Semaphore(1); // Protection pour le partage
+												// des données
 
 	public ProdCons(Observateur ob, int capacity) {
 		this.ob = ob;
@@ -31,46 +35,30 @@ public class ProdCons implements Tampon {
 
 	@Override
 	// Recupère un message dans le tampon
-	synchronized public Message get(_Consommateur arg0) throws Exception, InterruptedException {
+	public Message get(_Consommateur arg0) throws Exception, InterruptedException {
+		nonVide.acquire();
+		mutex.acquire();
+		// synchronized (this) {
 
-		// Tant que le tampon est vide et que le programme n'est pas fini on
-		// attend
-		while (!(enAttente() > 0) && !fini()) {
-			try {
-				wait();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		Message message = buffer.remove();
 
-		// Si le programme est fini on sort de la methode en envoyant une
-		// Exception
-		if (fini()) {
-			throw new Exception("Fin");
-		}
-
-		Message msg = buffer.remove();
-		notifyAll();
-
-		return msg;
+		mutex.release();
+		nonPlein.release();
+		return message;
+		// }
 	}
 
 	@Override
 	// Ajoute un message dans le tampon
-	synchronized public void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
+	public void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
 
-		// Tant que le buffer est complet, attendre
-		while (!(enAttente() < taille())) {
-			try {
-				wait();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
+		nonPlein.acquire();
+		mutex.acquire();
+		// synchronized (this) {
 		buffer.add(arg1);
-
-		notifyAll();
+		// }
+		mutex.release();
+		nonVide.release();
 
 	}
 
@@ -84,6 +72,8 @@ public class ProdCons implements Tampon {
 	synchronized public void reveiller() {
 		fini = true;
 		notifyAll();
+		nonVide.notifyAll();
+		// mutex.notifyAll();
 	}
 
 	// Accesseur de la variable fini

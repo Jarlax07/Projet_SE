@@ -1,13 +1,12 @@
 package jus.poc.prodcons.v1;
 
-import jus.poc.prodcons.Tampon;
-import jus.poc.prodcons._Consommateur;
-import jus.poc.prodcons._Producteur;
-
 import java.util.concurrent.ArrayBlockingQueue;
 
 import jus.poc.prodcons.Message;
 import jus.poc.prodcons.Observateur;
+import jus.poc.prodcons.Tampon;
+import jus.poc.prodcons._Consommateur;
+import jus.poc.prodcons._Producteur;
 
 public class ProdCons implements Tampon {
 
