@@ -4,7 +4,6 @@ import java.util.Properties;
 
 import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons.Simulateur;
-
 import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Map;
@@ -22,14 +21,73 @@ public class TestProdCons extends Simulateur {
 	protected int nombreMoyenNbExemplaire;
 	protected int deviationNombreMoyenNbExemplaire;
 
+	protected Observateur ob;
+
 	public TestProdCons(Observateur observateur) {
 		super(observateur);
+		ob = observateur;
 	}
 
 	protected void run() throws Exception {
 		// le corps de votre programme principal
+
+		// On récupère les variable dans un fichier xml
 		init("jus/poc/prodcons/options/options.xml");
-		
+
+		Consommateur cons[] = new Consommateur[nbCons];
+
+		Producteur prod[] = new Producteur[nbProd];
+
+		// TODO modifier le 10 avec une capacité récupéré
+		ProdCons buffer = new ProdCons(ob, 10);
+
+		// On créer et on démarre les consommateurs
+		for (int i = 0; i < nbCons; i++) {
+			cons[i] = new Consommateur(ob, tempsMoyenConsommation, deviationTempsMoyenConsommation, buffer);
+			cons[i].start();
+		}
+
+		// On créer et on démarre les producteurs
+		for (int i = 0; i < nbProd; i++) {
+			prod[i] = new Producteur(ob, tempsMoyenProduction, deviationTempsMoyenProduction, buffer,
+					nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
+			prod[i].start();
+		}
+
+		// On boucle tant que tout ce qui doit etre produit n'a pas était
+		// consommé
+		while (!(sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
+
+		}
+
+		// On reveille les threads en attente et on leur dit que le programme
+		// est terminé
+		try {
+			buffer.reveiller();
+
+		} catch (IllegalMonitorStateException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Fini");
+	}
+
+	// Calcule la somme des messages a produire par les producteurs
+	public int sum_prod(Producteur p[], int taille) {
+		int somme = 0;
+		for (int i = 0; i < taille; i++) {
+			somme += p[i].nombreDeMessages();
+		}
+		return somme;
+	}
+
+	// Calcule la somme des messages déjà consommé par les consommateurs
+	public int sum_cons(Consommateur c[], int taille) {
+		int somme = 0;
+		for (int i = 0; i < taille; i++) {
+			somme += c[i].nombreDeMessages();
+		}
+		return somme;
 	}
 
 	public static void main(String[] args) {
