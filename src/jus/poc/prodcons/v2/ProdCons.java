@@ -17,14 +17,16 @@ public class ProdCons implements Tampon {
 
 	private ArrayBlockingQueue<Message> buffer; // FIFO
 	private Semaphore nonVide = new Semaphore(0); // Condition de consommation
-	private Semaphore nonPlein = new Semaphore(1); // Condition de production
-	private Semaphore mutex = new Semaphore(1); // Protection pour le partage
-												// des données
+	private Semaphore nonPlein; // Condition de
+								// production
+	private Semaphore mutexIn = new Semaphore(1); // Protection pour le partage
+	private Semaphore mutexOut = new Semaphore(1); // des données
 
 	public ProdCons(Observateur ob, int capacity) {
 		this.ob = ob;
 		this.capacity = capacity;
 		buffer = new ArrayBlockingQueue<Message>(this.capacity);
+		nonPlein = new Semaphore(this.capacity);
 	}
 
 	@Override
@@ -36,28 +38,47 @@ public class ProdCons implements Tampon {
 	@Override
 	// Recupère un message dans le tampon
 	public Message get(_Consommateur arg0) throws Exception, InterruptedException {
-		nonVide.acquire();
-		mutex.acquire();
-		// synchronized (this) {
+
+		try {
+			nonVide.acquire();
+		} catch (InterruptedException e) {
+			if (fini()) {
+				throw new Exception("Fin");
+			}
+			e.printStackTrace();
+		}
+		try {
+			mutexOut.acquire();
+		} catch (InterruptedException e) {
+
+			if (fini()) {
+				throw new Exception("Fin");
+			}
+			e.printStackTrace();
+		}
 
 		Message message = buffer.remove();
-
-		mutex.release();
+		// in.next();
+		mutexOut.release();
 		nonPlein.release();
 		return message;
-		// }
 	}
 
 	@Override
 	// Ajoute un message dans le tampon
 	public void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
-
-		nonPlein.acquire();
-		mutex.acquire();
-		// synchronized (this) {
+		try {
+			nonPlein.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		try {
+			mutexIn.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		buffer.add(arg1);
-		// }
-		mutex.release();
+		mutexIn.release();
 		nonVide.release();
 
 	}
@@ -72,8 +93,6 @@ public class ProdCons implements Tampon {
 	synchronized public void reveiller() {
 		fini = true;
 		notifyAll();
-		nonVide.notifyAll();
-		// mutex.notifyAll();
 	}
 
 	// Accesseur de la variable fini
