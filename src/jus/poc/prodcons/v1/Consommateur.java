@@ -31,7 +31,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 
 	public void run() {
 
-		// On attend un certain temps avant de consommé
+		// On attend un certain temps avant de consommer
 		try {
 			sleep(time.next() * 100);
 		} catch (InterruptedException e1) {
