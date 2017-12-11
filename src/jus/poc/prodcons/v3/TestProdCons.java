@@ -40,11 +40,14 @@ public class TestProdCons extends Simulateur {
 
 		// TODO modifier le 10 avec une capacité récupérée
 		ProdCons buffer = new ProdCons(ob, 10);
+		
+		ob.init(nbProd,nbCons,nbBuffer);
 
 		// On créer et on démarre les consommateurs
 		for (int i = 0; i < nbCons; i++) {
 			cons[i] = new Consommateur(ob, tempsMoyenConsommation, deviationTempsMoyenConsommation, buffer);
 			cons[i].start();
+			ob.newConsommateur(cons[i]);
 		}
 
 		// On créé et on démarre les producteurs
@@ -52,13 +55,12 @@ public class TestProdCons extends Simulateur {
 			prod[i] = new Producteur(ob, tempsMoyenProduction, deviationTempsMoyenProduction, buffer,
 					nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 			prod[i].start();
+			ob.newProducteur(prod[i]);
 		}
 
 		// On boucle tant que tout ce qui doit être produit n'a pas été
 		// consommé
-		while (!(
-
-		sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
+		while (!(sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
 
 		}
 

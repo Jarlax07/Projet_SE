@@ -56,9 +56,7 @@ public class TestProdCons extends Simulateur {
 
 		// On boucle tant que tout ce qui doit être produit n'a pas été
 		// consommé
-		while (!(
-
-		sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
+		while (!(sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
 
 		}
 

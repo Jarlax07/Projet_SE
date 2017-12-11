@@ -10,17 +10,18 @@ public class Producteur extends Acteur implements _Producteur {
 	private ProdCons buffer;
 	private int nbmsg;
 	private Aleatoire time;
+	private Observateur ob;
 
 	protected Producteur(Observateur observateur, int moyenneTempsDeTraitement, int deviationTempsDeTraitement,
 			ProdCons buffer, int nombreMoyenDeProduction, int deviationNombreMoyenDeProduction)
 			throws ControlException {
 		super(Acteur.typeProducteur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
 		this.buffer = buffer;
-
+		
 		nbmsg = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 
 		time = new Aleatoire(moyenneTempsDeTraitement, deviationTempsDeTraitement);
-
+		ob=observateur;
 	}
 
 	@Override
@@ -30,18 +31,22 @@ public class Producteur extends Acteur implements _Producteur {
 	}
 
 	public void run() {
-
+		int t=0;
+		MessageX msg;
 		for (int i = 0; i < nbmsg; i++) {
 
 			// On attend un certain temps avant de produire un message
 			try {
-				sleep(time.next() * 100);
+				t=time.next();
+				sleep(t * 100);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
 
 			try {
-				buffer.put(this, new MessageX("Bonjour"+i));
+				msg= new MessageX("Bonjour"+i);
+				ob.productionMessage(this, msg, t);
+				buffer.put(this, msg);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (Exception e) {

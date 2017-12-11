@@ -12,6 +12,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 	private ProdCons buffer;
 	private int nbmsg;
 	private Aleatoire time;
+	private Observateur ob;
 
 	protected Consommateur(Observateur observateur, int moyenneTempsDeTraitement, int deviationTempsDeTraitement,
 			ProdCons buffer) throws ControlException {
@@ -21,6 +22,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 		this.nbmsg = 0;
 
 		time = new Aleatoire(moyenneTempsDeTraitement, deviationTempsDeTraitement);
+		ob=observateur;
 	}
 
 	@Override
@@ -30,10 +32,11 @@ public class Consommateur extends Acteur implements _Consommateur {
 	}
 
 	public void run() {
-
+		int t=0;
 		// On attend un certain temps avant de consommé
 		try {
-			sleep(time.next() * 100);
+			t=time.next();
+			sleep(t * 100);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
@@ -43,6 +46,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 			try {
 				msg = buffer.get(this);
 				System.out.println(msg);
+				ob.consommationMessage(this, msg, t);
 				nbmsg++;
 			} catch (InterruptedException e) {
 				e.printStackTrace();

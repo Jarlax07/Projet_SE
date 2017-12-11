@@ -52,6 +52,7 @@ public class ProdCons implements Tampon {
 		}
 
 		Message message = buffer.remove();
+		ob.retraitMessage(arg0, message);
 		mutexOut.release();
 		nonPlein.release();
 		return message;
@@ -68,6 +69,7 @@ public class ProdCons implements Tampon {
 			e.printStackTrace();
 		}
 		buffer.add(arg1);
+		ob.depotMessage(arg0, arg1);
 		mutexIn.release();
 		nonVide.release();
 
