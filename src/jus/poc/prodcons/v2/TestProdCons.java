@@ -1,12 +1,12 @@
 package jus.poc.prodcons.v2;
 
+import java.io.IOException;
+import java.util.InvalidPropertiesFormatException;
+import java.util.Map;
 import java.util.Properties;
 
 import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons.Simulateur;
-import java.io.IOException;
-import java.util.InvalidPropertiesFormatException;
-import java.util.Map;
 
 public class TestProdCons extends Simulateur {
 	protected int nbProd;
@@ -31,14 +31,14 @@ public class TestProdCons extends Simulateur {
 	protected void run() throws Exception {
 		// le corps de votre programme principal
 
-		// On récupère les variable dans un fichier xml
+		// On récupère les variables dans un fichier xml
 		init("jus/poc/prodcons/options/options.xml");
 
 		Consommateur cons[] = new Consommateur[nbCons];
 
 		Producteur prod[] = new Producteur[nbProd];
 
-		// TODO modifier le 10 avec une capacité récupéré
+		// TODO modifier le 10 avec une capacité récupérée
 		ProdCons buffer = new ProdCons(ob, 10);
 
 		// On créer et on démarre les consommateurs
@@ -47,32 +47,30 @@ public class TestProdCons extends Simulateur {
 			cons[i].start();
 		}
 
-		// On créer et on démarre les producteurs
+		// On créé et on démarre les producteurs
 		for (int i = 0; i < nbProd; i++) {
 			prod[i] = new Producteur(ob, tempsMoyenProduction, deviationTempsMoyenProduction, buffer,
 					nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 			prod[i].start();
 		}
 
-		// On boucle tant que tout ce qui doit etre produit n'a pas était
+		// On boucle tant que tout ce qui doit être produit n'a pas été
 		// consommé
-		while (!(sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
+		while (!(
+
+		sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
 
 		}
 
-		// On reveille les threads en attente et on leur dit que le programme
-		// est terminé
-		try {
-			buffer.reveiller();
+		buffer.reveiller();
 
-		} catch (IllegalMonitorStateException e) {
-			e.printStackTrace();
+		for (int i = 0; i < nbCons; i++) {
+			cons[i].interrupt();
 		}
-
 		System.out.println("Fini");
 	}
 
-	// Calcule la somme des messages a produire par les producteurs
+	// Calcule la somme des messages à produire par les producteurs
 	public int sum_prod(Producteur p[], int taille) {
 		int somme = 0;
 		for (int i = 0; i < taille; i++) {
