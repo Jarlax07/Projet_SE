@@ -38,8 +38,7 @@ public class TestProdCons extends Simulateur {
 
 		Producteur prod[] = new Producteur[nbProd];
 
-		// TODO modifier le 10 avec une capacité récupérée
-		ProdCons buffer = new ProdCons(ob, 10);
+		ProdCons buffer = new ProdCons(ob, nbBuffer);
 		
 		ob.init(nbProd,nbCons,nbBuffer);
 
