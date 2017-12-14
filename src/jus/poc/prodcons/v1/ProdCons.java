@@ -34,18 +34,12 @@ public class ProdCons implements Tampon {
 
 		// Tant que le tampon est vide et que le programme n'est pas fini on
 		// attend
-		while (!(enAttente() > 0) && !fini()) {
+		while (!(enAttente() > 0)) {
 			try {
 				wait();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-
-		// Si le programme est fini on sort de la methode en envoyant une
-		// Exception
-		if (fini()) {
-			throw new Exception("Fin");
 		}
 
 		Message msg = buffer.remove();
@@ -79,15 +73,6 @@ public class ProdCons implements Tampon {
 		return capacity;
 	}
 
-	// Reveille tout les threads en attente dans get
-	synchronized public void reveiller() {
-		fini = true;
-		notifyAll();
-	}
 
-	// Accesseur de la variable fini
-	public boolean fini() {
-		return fini;
-	}
 
 }

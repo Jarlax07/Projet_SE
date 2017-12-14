@@ -34,41 +34,46 @@ public class TestProdCons extends Simulateur {
 		// On récupère les variables dans un fichier xml
 		init("jus/poc/prodcons/options/options.xml");
 
-		Consommateur cons[] = new Consommateur[nbCons];
+		if (nombreMoyenNbExemplaire + deviationNombreMoyenNbExemplaire > nbCons) {
+			System.out.println(
+					"Risque de bloquage car le nombre d'exemplaires d'un message peut être supérieur au nombre de consommateur.");
+			System.out
+					.println("Veuillez modifier vos paramètres pour que le programme puisse fonctionner correctement");
 
-		Producteur prod[] = new Producteur[nbProd];
+		} else {
 
-		ProdCons buffer = new ProdCons(ob, nbBuffer);
-		
-		ob.init(nbProd,nbCons,nbBuffer);
+			Consommateur cons[] = new Consommateur[nbCons];
 
-		// On créer et on démarre les consommateurs
-		for (int i = 0; i < nbCons; i++) {
-			cons[i] = new Consommateur(ob, tempsMoyenConsommation, deviationTempsMoyenConsommation, buffer);
-			cons[i].start();
-			ob.newConsommateur(cons[i]);
+			Producteur prod[] = new Producteur[nbProd];
+
+			ProdCons buffer = new ProdCons(ob, nbBuffer, cons);
+
+			ob.init(nbProd, nbCons, nbBuffer);
+
+			// On créer et on démarre les consommateurs
+			for (int i = 0; i < nbCons; i++) {
+				cons[i] = new Consommateur(ob, tempsMoyenConsommation, deviationTempsMoyenConsommation, buffer);
+				cons[i].start();
+				ob.newConsommateur(cons[i]);
+			}
+
+			// On créé et on démarre les producteurs
+			for (int i = 0; i < nbProd; i++) {
+				prod[i] = new Producteur(ob, tempsMoyenProduction, deviationTempsMoyenProduction, buffer,
+						nombreMoyenDeProduction, deviationNombreMoyenDeProduction, nombreMoyenNbExemplaire,
+						deviationNombreMoyenNbExemplaire);
+				prod[i].start();
+				ob.newProducteur(prod[i]);
+			}
+
+			// On boucle tant que tout ce qui doit être produit n'a pas été
+			// consommé
+			while (!(sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
+			}
+
+			System.out.println("Fini");
+
 		}
-
-		// On créé et on démarre les producteurs
-		for (int i = 0; i < nbProd; i++) {
-			prod[i] = new Producteur(ob, tempsMoyenProduction, deviationTempsMoyenProduction, buffer,
-					nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
-			prod[i].start();
-			ob.newProducteur(prod[i]);
-		}
-
-		// On boucle tant que tout ce qui doit être produit n'a pas été
-		// consommé
-		while (!(sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
-
-		}
-
-		buffer.reveiller();
-
-		for (int i = 0; i < nbCons; i++) {
-			cons[i].interrupt();
-		}
-		System.out.println("Fini");
 	}
 
 	// Calcule la somme des messages à produire par les producteurs

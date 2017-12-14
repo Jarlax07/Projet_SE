@@ -41,7 +41,7 @@ public class Producteur extends Acteur implements _Producteur {
 			}
 
 			try {
-				buffer.put(this, new MessageX("Bonjour"+i));
+				buffer.put(this, new MessageX("Bonjour "+i));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (Exception e) {

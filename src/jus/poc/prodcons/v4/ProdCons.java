@@ -13,21 +13,23 @@ public class ProdCons implements Tampon {
 
 	private Observateur ob;
 	private int capacity;
-	private boolean fini = false;
 
-	private ArrayBlockingQueue<Message> buffer; // FIFO
+	private ArrayBlockingQueue<MessageX> buffer; // FIFO
 	private Semaphore nonVide = new Semaphore(0); // Condition de consommation
 
 	private Semaphore nonPlein; // Condition de production
 	private Semaphore mutexIn = new Semaphore(1); // Protection pour le partage
 	private Semaphore mutexOut = new Semaphore(1); // des données
+	
+	private Consommateur cons[];
 
-	public ProdCons(Observateur ob, int capacity) {
+	public ProdCons(Observateur ob, int capacity, Consommateur c[]) {
 		this.ob = ob;
 		this.capacity = capacity;
-		buffer = new ArrayBlockingQueue<Message>(this.capacity);
+		buffer = new ArrayBlockingQueue<MessageX>(this.capacity);
 
 		nonPlein = new Semaphore(this.capacity);
+		cons=c;
 	}
 
 	@Override
@@ -45,18 +47,36 @@ public class ProdCons implements Tampon {
 
 		} catch (InterruptedException e) {
 
-			if (fini()) {
-				throw new Exception("Fin");
-			}
 			e.printStackTrace();
 		}
-
-		Message message = buffer.remove();
-		ob.retraitMessage(arg0, message);
+		MessageX message;
+		int nbex;
+		synchronized (this) {
+			message = buffer.iterator().next();
+			nbex=message.getNbEx();
+			if (nbex > 1) {
+				message.decrement();
+				ob.retraitMessage(arg0, message);
+			} else {
+				message = buffer.remove();
+				ob.retraitMessage(arg0, message);
+				this.debloquer(cons);
+			}
+		}
+		
 		mutexOut.release();
-		nonPlein.release();
+		if (nbex > 1) {
+			nonVide.release();
+		}else{
+			nonPlein.release();
+		}
+
+		
+		message.getProd().getSem().release();
+		
 		return message;
 	}
+
 
 	@Override
 	// Ajoute un message dans le tampon
@@ -68,8 +88,12 @@ public class ProdCons implements Tampon {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		buffer.add(arg1);
-		ob.depotMessage(arg0, arg1);
+		
+		synchronized(this){
+
+			buffer.add((MessageX) arg1);
+			ob.depotMessage(arg0, arg1);
+		}
 		mutexIn.release();
 		nonVide.release();
 
@@ -80,15 +104,13 @@ public class ProdCons implements Tampon {
 	public int taille() {
 		return capacity;
 	}
-
-	// Reveille tout les threads en attente dans get
-	synchronized public void reveiller() {
-		fini = true;
-	}
-
-	// Accesseur de la variable fini
-	public boolean fini() {
-		return fini;
+	
+	public void debloquer(Consommateur c[]){
+		for(int i=0; i< c.length;i++){
+			if(c[i].getSem().hasQueuedThreads()){
+				c[i].getSem().release();
+			}
+		}
 	}
 
 }
