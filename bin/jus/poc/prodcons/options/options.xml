@@ -5,12 +5,12 @@
 Cette configuration ...
 </comment>
 <entry key="nbCons">10</entry>
-<entry key="nbProd">1</entry>
+<entry key="nbProd">5</entry>
 <entry key="nbBuffer">1</entry>
-<entry key="tempsMoyenProduction">10</entry>
-<entry key="deviationTempsMoyenProduction">5</entry>
-<entry key="tempsMoyenConsommation">10</entry>
-<entry key="deviationTempsMoyenConsommation">1</entry>
+<entry key="tempsMoyenProduction">1000</entry>
+<entry key="deviationTempsMoyenProduction">100</entry>
+<entry key="tempsMoyenConsommation">1000</entry>
+<entry key="deviationTempsMoyenConsommation">100</entry>
 <entry key="nombreMoyenDeProduction">10</entry>
 <entry key="deviationNombreMoyenDeProduction">1</entry>
 <entry key="nombreMoyenNbExemplaire">5</entry>
