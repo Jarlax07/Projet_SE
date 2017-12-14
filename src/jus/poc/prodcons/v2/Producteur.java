@@ -47,6 +47,8 @@ public class Producteur extends Acteur implements _Producteur {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			
+			Thread.yield();
 		}
 
 	}
