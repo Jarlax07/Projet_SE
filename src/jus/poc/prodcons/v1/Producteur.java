@@ -41,12 +41,13 @@ public class Producteur extends Acteur implements _Producteur {
 			}
 
 			try {
-				buffer.put(this, new MessageX("Bonjour "+i));
+				buffer.put(this, new MessageX("Bonjour "+i + " " + this.getId()));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			Thread.yield();
 		}
 
 	}

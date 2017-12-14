@@ -57,6 +57,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 				e.printStackTrace();
 
 			}
+			Thread.yield();
 		}
 
 	}

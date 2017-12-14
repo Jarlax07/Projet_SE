@@ -65,7 +65,7 @@ public class Producteur extends Acteur implements _Producteur {
 			}
 
 			try {
-				msg = new MessageX("Bonjour" + i, Exemplaires[i], this);
+				msg = new MessageX("Bonjour " + i + " " +this.getId(), Exemplaires[i], this);
 				ob.productionMessage(this, msg, t);
 				buffer.put(this, msg);
 				sem.acquire();
@@ -74,7 +74,7 @@ public class Producteur extends Acteur implements _Producteur {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			//TODO Ajouter un .yield ?
+			Thread.yield();
 		}
 
 	}

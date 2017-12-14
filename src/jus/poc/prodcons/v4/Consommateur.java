@@ -68,7 +68,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 
 			}
 			
-			//TODO Ajouter un .yield ?
+			Thread.yield();
 		}
 
 	}
