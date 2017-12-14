@@ -2,6 +2,9 @@ package jus.poc.prodcons.v5;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import jus.poc.prodcons.Message;
 import jus.poc.prodcons.Observateur;
@@ -15,18 +18,15 @@ public class ProdCons implements Tampon {
 	private int capacity;
 
 	private ArrayBlockingQueue<Message> buffer; // FIFO
-	private Semaphore nonVide = new Semaphore(0); // Condition de consommation
-
-	private Semaphore nonPlein; // Condition de production
-	private Semaphore mutexIn = new Semaphore(1); // Protection pour le partage
-	private Semaphore mutexOut = new Semaphore(1); // des données
+	private final Lock lock = new ReentrantLock();
+	private final Condition nonPlein = lock.newCondition();
+	private final Condition nonVide = lock.newCondition();
 
 	public ProdCons(Observateur ob, int capacity) {
 		this.ob = ob;
 		this.capacity = capacity;
 		buffer = new ArrayBlockingQueue<Message>(this.capacity);
 
-		nonPlein = new Semaphore(this.capacity);
 	}
 
 	@Override
@@ -38,44 +38,44 @@ public class ProdCons implements Tampon {
 	@Override
 	// Recupère un message dans le tampon
 	public Message get(_Consommateur arg0) throws Exception, InterruptedException {
+		lock.lock();
+
 		try {
-			nonVide.acquire();
-			mutexOut.acquire();
-
-		} catch (InterruptedException e) {
-
-			e.printStackTrace();
-		}
-		Message message;
-
-		synchronized (this) {
+			while (!(enAttente() > 0)) {
+				nonVide.await();
+			}
+			Message message;
 
 			message = buffer.remove();
 			ob.retraitMessage(arg0, message);
+
+			nonPlein.signal();
+
+			return message;
+		} finally {
+			lock.unlock();
 		}
-		mutexOut.release();
-		nonPlein.release();
-		return message;
+
 	}
 
 	@Override
 	// Ajoute un message dans le tampon
 	public void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
+		lock.lock();
 
 		try {
-			nonPlein.acquire();
-			mutexIn.acquire();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		synchronized (this) {
+			while (!(enAttente() < taille())) {
+				nonPlein.await();
+			}
+
 			buffer.add(arg1);
 			ob.depotMessage(arg0, arg1);
 
+			nonVide.signal();
+		} finally {
+			lock.unlock();
 		}
-		mutexIn.release();
-		nonVide.release();
-
+		
 	}
 
 	@Override
