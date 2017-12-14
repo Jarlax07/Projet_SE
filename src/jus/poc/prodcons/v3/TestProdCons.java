@@ -63,11 +63,6 @@ public class TestProdCons extends Simulateur {
 
 		}
 
-		buffer.reveiller();
-
-		for (int i = 0; i < nbCons; i++) {
-			cons[i].interrupt();
-		}
 		System.out.println("Fini");
 	}
 

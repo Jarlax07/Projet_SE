@@ -21,6 +21,8 @@ public class Consommateur extends Acteur implements _Consommateur {
 		this.nbmsg = 0;
 
 		time = new Aleatoire(moyenneTempsDeTraitement, deviationTempsDeTraitement);
+
+		this.setDaemon(true);
 	}
 
 	@Override
@@ -31,15 +33,16 @@ public class Consommateur extends Acteur implements _Consommateur {
 
 	public void run() {
 
-		// On attend un certain temps avant de consommé
-		try {
-			sleep(time.next() * 100);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-
 		Message msg;
-		while (!buffer.fini()) {
+		while (true) {
+
+			// On attend un certain temps avant de consommé
+			try {
+				sleep(time.next() * 100);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+
 			try {
 				msg = buffer.get(this);
 				System.out.println(msg);
@@ -48,10 +51,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 				e.printStackTrace();
 			} catch (Exception e) {
 
-				// Si l'exception récupéré n'est pas l'exception de fin du
-				// consommateur on affiche la trace
-				if (!e.getMessage().equals("Fin"))
-					e.printStackTrace();
+				e.printStackTrace();
 
 			}
 		}

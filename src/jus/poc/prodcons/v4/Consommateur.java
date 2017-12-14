@@ -1,5 +1,7 @@
 package jus.poc.prodcons.v4;
 
+import java.util.concurrent.Semaphore;
+
 import jus.poc.prodcons.Acteur;
 import jus.poc.prodcons.Aleatoire;
 import jus.poc.prodcons.ControlException;
@@ -13,6 +15,9 @@ public class Consommateur extends Acteur implements _Consommateur {
 	private int nbmsg;
 	private Aleatoire time;
 	private Observateur ob;
+	
+	//Semaphore représentant le contrainte de non consommation tant que tous les exemplaires du message n'ont pas été
+	private Semaphore contrainte = new Semaphore(0);
 
 	protected Consommateur(Observateur observateur, int moyenneTempsDeTraitement, int deviationTempsDeTraitement,
 			ProdCons buffer) throws ControlException {
@@ -22,29 +27,36 @@ public class Consommateur extends Acteur implements _Consommateur {
 		this.nbmsg = 0;
 
 		time = new Aleatoire(moyenneTempsDeTraitement, deviationTempsDeTraitement);
-		ob=observateur;
+		ob = observateur;
+		this.setDaemon(true);
 	}
 
 	@Override
-	// Renvoi le nombre de message deja consommé
+	// Renvoi le nombre de message deja consommer
 	public int nombreDeMessages() {
 		return nbmsg;
 	}
 
 	public void run() {
-		int t=0;
-		// On attend un certain temps avant de consommé
-		try {
-			t=time.next();
-			sleep(t * 100);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+		int t = 0;
 
 		Message msg;
-		while (!buffer.fini()) {
+		while (true) {
+
+			// On attend un certain temps avant de consommer
+			try {
+				t = time.next();
+				sleep(t * 100);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+
+
 			try {
 				msg = buffer.get(this);
+				if(((MessageX)msg).getNbEx()>1){
+					contrainte.acquire();
+				}
 				System.out.println(msg);
 				ob.consommationMessage(this, msg, t);
 				nbmsg++;
@@ -52,14 +64,15 @@ public class Consommateur extends Acteur implements _Consommateur {
 				e.printStackTrace();
 			} catch (Exception e) {
 
-				// Si l'exception récupéré n'est pas l'exception de fin du
-				// consommateur on affiche la trace
-				if (!e.getMessage().equals("Fin"))
-					e.printStackTrace();
+				e.printStackTrace();
 
 			}
 		}
 
+	}
+	
+	public Semaphore getSem(){
+		return contrainte;
 	}
 
 }

@@ -38,7 +38,6 @@ public class TestProdCons extends Simulateur {
 
 		Producteur prod[] = new Producteur[nbProd];
 
-		// TODO modifier le 10 avec une capacité récupéré
 		ProdCons buffer = new ProdCons(ob, nbBuffer);
 
 		// On créer et on démarre les consommateurs
@@ -60,14 +59,6 @@ public class TestProdCons extends Simulateur {
 
 		}
 
-		// On reveille les threads en attente et on leur dit que le programme
-		// est terminé
-		try {
-			buffer.reveiller();
-
-		} catch (IllegalMonitorStateException e) {
-			e.printStackTrace();
-		}
 
 		System.out.println("Fini");
 	}

@@ -13,7 +13,6 @@ public class ProdCons implements Tampon {
 
 	private Observateur ob;
 	private int capacity;
-	private boolean fini = false;
 
 	private ArrayBlockingQueue<Message> buffer; // FIFO
 	private Semaphore nonVide = new Semaphore(0); // Condition de consommation
@@ -45,13 +44,12 @@ public class ProdCons implements Tampon {
 
 		} catch (InterruptedException e) {
 
-			if (fini()) {
-				throw new Exception("Fin");
-			}
 			e.printStackTrace();
 		}
-
-		Message message = buffer.remove();
+		Message message;
+		synchronized (this) {
+			message = buffer.remove();
+		}
 		mutexOut.release();
 		nonPlein.release();
 		return message;
@@ -67,7 +65,10 @@ public class ProdCons implements Tampon {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		buffer.add(arg1);
+		synchronized (this) {
+			buffer.add(arg1);
+
+		}
 		mutexIn.release();
 		nonVide.release();
 
@@ -77,16 +78,6 @@ public class ProdCons implements Tampon {
 	// Capacité maximale du tampon
 	public int taille() {
 		return capacity;
-	}
-
-	// Reveille tout les threads en attente dans get
-	synchronized public void reveiller() {
-		fini = true;
-	}
-
-	// Accesseur de la variable fini
-	public boolean fini() {
-		return fini;
 	}
 
 }

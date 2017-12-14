@@ -38,7 +38,7 @@ public class TestProdCons extends Simulateur {
 
 		Producteur prod[] = new Producteur[nbProd];
 
-		ProdCons buffer = new ProdCons(ob, nbBuffer);
+		ProdCons buffer = new ProdCons(ob, nbBuffer,cons);
 		
 		ob.init(nbProd,nbCons,nbBuffer);
 
@@ -52,7 +52,7 @@ public class TestProdCons extends Simulateur {
 		// On créé et on démarre les producteurs
 		for (int i = 0; i < nbProd; i++) {
 			prod[i] = new Producteur(ob, tempsMoyenProduction, deviationTempsMoyenProduction, buffer,
-					nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
+					nombreMoyenDeProduction, deviationNombreMoyenDeProduction, nombreMoyenNbExemplaire, deviationNombreMoyenNbExemplaire);
 			prod[i].start();
 			ob.newProducteur(prod[i]);
 		}
@@ -60,14 +60,8 @@ public class TestProdCons extends Simulateur {
 		// On boucle tant que tout ce qui doit être produit n'a pas été
 		// consommé
 		while (!(sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
-
 		}
 
-		buffer.reveiller();
-
-		for (int i = 0; i < nbCons; i++) {
-			cons[i].interrupt();
-		}
 		System.out.println("Fini");
 	}
 
