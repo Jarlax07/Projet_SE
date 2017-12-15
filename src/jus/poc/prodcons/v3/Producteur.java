@@ -38,7 +38,7 @@ public class Producteur extends Acteur implements _Producteur {
 			// On attend un certain temps avant de produire un message
 			try {
 				t=time.next();
-				sleep(t * 100);
+				sleep(t);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
@@ -52,6 +52,8 @@ public class Producteur extends Acteur implements _Producteur {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			
+			Thread.yield();
 		}
 
 	}
