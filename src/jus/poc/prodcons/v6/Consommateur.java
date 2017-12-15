@@ -13,8 +13,9 @@ public class Consommateur extends Acteur implements _Consommateur {
 	private int nbmsg;
 	private Aleatoire time;
 	private Observateur ob;
+	private ObservateurPerso ob2;
 
-	protected Consommateur(Observateur observateur, int moyenneTempsDeTraitement, int deviationTempsDeTraitement,
+	protected Consommateur(Observateur observateur,ObservateurPerso ob2, int moyenneTempsDeTraitement, int deviationTempsDeTraitement,
 			ProdCons buffer) throws ControlException {
 		super(Acteur.typeConsommateur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
 
@@ -23,6 +24,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 
 		time = new Aleatoire(moyenneTempsDeTraitement, deviationTempsDeTraitement);
 		ob = observateur;
+		this.ob2 =ob2;
 		this.setDaemon(true);
 	}
 
@@ -40,7 +42,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 			// On attend un certain temps avant de consommé
 			try {
 				t = time.next();
-				sleep(t * 100);
+				sleep(t);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
@@ -49,6 +51,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 				msg = buffer.get(this);
 				System.out.println(msg);
 				ob.consommationMessage(this, msg, t);
+				ob2.consommationMessage(msg);
 				nbmsg++;
 			} catch (InterruptedException e) {
 				e.printStackTrace();

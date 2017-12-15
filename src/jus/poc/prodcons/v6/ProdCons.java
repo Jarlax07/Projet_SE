@@ -12,6 +12,7 @@ import jus.poc.prodcons._Producteur;
 public class ProdCons implements Tampon {
 
 	private Observateur ob;
+	private ObservateurPerso ob2;
 	private int capacity;
 
 	private ArrayBlockingQueue<Message> buffer; // FIFO
@@ -21,8 +22,9 @@ public class ProdCons implements Tampon {
 	private Semaphore mutexIn = new Semaphore(1); // Protection pour le partage
 	private Semaphore mutexOut = new Semaphore(1); // des données
 
-	public ProdCons(Observateur ob, int capacity) {
+	public ProdCons(Observateur ob, ObservateurPerso ob2, int capacity) {
 		this.ob = ob;
+		this.ob2 = ob2;
 		this.capacity = capacity;
 		buffer = new ArrayBlockingQueue<Message>(this.capacity);
 
@@ -52,6 +54,7 @@ public class ProdCons implements Tampon {
 
 			message = buffer.remove();
 			ob.retraitMessage(arg0, message);
+			ob2.retraitMessage(message);
 		}
 		mutexOut.release();
 		nonPlein.release();
@@ -71,6 +74,7 @@ public class ProdCons implements Tampon {
 		synchronized (this) {
 			buffer.add(arg1);
 			ob.depotMessage(arg0, arg1);
+			ob2.depotMessage(arg1);
 
 		}
 		mutexIn.release();

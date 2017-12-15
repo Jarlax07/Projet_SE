@@ -22,10 +22,12 @@ public class TestProdCons extends Simulateur {
 	protected int deviationNombreMoyenNbExemplaire;
 
 	protected Observateur ob;
+	protected ObservateurPerso ob2;
 
-	public TestProdCons(Observateur observateur) {
+	public TestProdCons(Observateur observateur, ObservateurPerso observateur2) {
 		super(observateur);
 		ob = observateur;
+		ob2 = observateur2;
 	}
 
 	protected void run() throws Exception {
@@ -38,13 +40,13 @@ public class TestProdCons extends Simulateur {
 
 		Producteur prod[] = new Producteur[nbProd];
 
-		ProdCons buffer = new ProdCons(ob, nbBuffer);
-		
-		ob.init(nbProd,nbCons,nbBuffer);
+		ProdCons buffer = new ProdCons(ob, ob2, nbBuffer);
+
+		ob.init(nbProd, nbCons, nbBuffer);
 
 		// On créer et on démarre les consommateurs
 		for (int i = 0; i < nbCons; i++) {
-			cons[i] = new Consommateur(ob, tempsMoyenConsommation, deviationTempsMoyenConsommation, buffer);
+			cons[i] = new Consommateur(ob, ob2, tempsMoyenConsommation, deviationTempsMoyenConsommation, buffer);
 			cons[i].start();
 			ob.newConsommateur(cons[i]);
 		}
@@ -62,6 +64,9 @@ public class TestProdCons extends Simulateur {
 		while (!(sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
 
 		}
+
+		System.out.println("Nombre de message produit par les producteurs : " + sum_prod(prod, nbProd)
+				+ ", Nombre de message retiré et consommé par les consommateur : " + sum_cons(cons, nbCons));
 
 		System.out.println("Fini");
 	}
@@ -85,7 +90,7 @@ public class TestProdCons extends Simulateur {
 	}
 
 	public static void main(String[] args) {
-		new TestProdCons(new Observateur()).start();
+		new TestProdCons(new Observateur(), new ObservateurPerso()).start();
 	}
 
 	/**
