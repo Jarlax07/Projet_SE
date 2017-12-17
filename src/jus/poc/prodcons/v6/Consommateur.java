@@ -66,8 +66,8 @@ public class Consommateur extends Acteur implements _Consommateur {
 
 	/**
 	 * Renvoie le nombre de message consommé
-	 * @return
-	 * 		Le nombre de message déjà consommé
+	 * 
+	 * @return Le nombre de message déjà consommé
 	 */
 	public int nombreDeMessages() {
 		return nbmsg;

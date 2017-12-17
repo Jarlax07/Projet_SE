@@ -28,23 +28,23 @@ public class Producteur extends Acteur implements _Producteur {
 	 * L'observateur du professeur
 	 */
 	private Observateur ob;
-	
+
 	/**
 	 * 
 	 * Constructeur d'un producteur
 	 * 
 	 * @param observateur
-	 * 		L'observateur du professeur
+	 *            L'observateur du professeur
 	 * @param moyenneTempsDeTraitement
-	 * 		La moyenne de temps de production
+	 *            La moyenne de temps de production
 	 * @param deviationTempsDeTraitement
-	 * 		La déviation de la moyenne de temps de production
+	 *            La déviation de la moyenne de temps de production
 	 * @param buffer2
-	 * 		Le buffer associé au programme
+	 *            Le buffer associé au programme
 	 * @param nombreMoyenDeProduction
-	 * 		Le nombre moyen de messages à produire
+	 *            Le nombre moyen de messages à produire
 	 * @param deviationNombreMoyenDeProduction
-	 * 		La déviation du nombre moyen de messages à produire
+	 *            La déviation du nombre moyen de messages à produire
 	 * @throws ControlException
 	 */
 	protected Producteur(Observateur observateur, int moyenneTempsDeTraitement, int deviationTempsDeTraitement,
@@ -52,41 +52,40 @@ public class Producteur extends Acteur implements _Producteur {
 			throws ControlException {
 		super(Acteur.typeProducteur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
 		this.buffer = buffer;
-		
+
 		nbmsg = Aleatoire.valeur(nombreMoyenDeProduction, deviationNombreMoyenDeProduction);
 
 		time = new Aleatoire(moyenneTempsDeTraitement, deviationTempsDeTraitement);
-		ob=observateur;
+		ob = observateur;
 	}
 
 	/**
 	 * Renvoie le nombre de message que doit produire le producteur
 	 * 
-	 * @return
-	 * 		Le nombre de message à produire
+	 * @return Le nombre de message à produire
 	 */
 	public int nombreDeMessages() {
 		return nbmsg;
 	}
-	
+
 	/**
 	 * 
 	 */
 	public void run() {
-		int t=0;
+		int t = 0;
 		MessageX msg;
 		for (int i = 0; i < nbmsg; i++) {
 
 			// On attend un certain temps avant de produire un message
 			try {
-				t=time.next();
+				t = time.next();
 				sleep(t);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
 
 			try {
-				msg= new MessageX("Bonjour "+i + " "+ this.getId());
+				msg = new MessageX("Bonjour " + i + " " + this.getId());
 				ob.productionMessage(this, msg, t);
 				buffer.put(this, msg);
 			} catch (InterruptedException e) {
@@ -94,7 +93,7 @@ public class Producteur extends Acteur implements _Producteur {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 			Thread.yield();
 		}
 

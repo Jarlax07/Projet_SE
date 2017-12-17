@@ -62,8 +62,7 @@ public class Producteur extends Acteur implements _Producteur {
 	/**
 	 * Renvoie le nombre de message que doit produire le producteur
 	 * 
-	 * @return
-	 * 		Le nombre de message à produire
+	 * @return Le nombre de message à produire
 	 */
 	public int nombreDeMessages() {
 		return nbmsg;

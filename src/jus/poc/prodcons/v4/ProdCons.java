@@ -9,37 +9,82 @@ import jus.poc.prodcons.Tampon;
 import jus.poc.prodcons._Consommateur;
 import jus.poc.prodcons._Producteur;
 
+/**
+ * 
+ * @author AUBERT Vincent et COURTIAL Julien
+ *
+ */
 public class ProdCons implements Tampon {
 
+	/**
+	 * L'observateur du professeur
+	 */
 	private Observateur ob;
+	/**
+	 * La capacité du buffer
+	 */
 	private int capacity;
+	/**
+	 * Le buffer
+	 */
+	private ArrayBlockingQueue<MessageX> buffer;
+	/**
+	 * Le semaphore représentant la condition de consommation.
+	 */
+	private Semaphore nonVide = new Semaphore(0);
+	/**
+	 * Le semaphore représentant la condition de production.
+	 */
+	private Semaphore nonPlein;
+	/**
+	 * Le semaphore de protection du partage de données pour la methode put
+	 */
+	private Semaphore mutexIn = new Semaphore(1);
+	/**
+	 * Le semaphore de protection du partage de données pour la méthode get.
+	 */
+	private Semaphore mutexOut = new Semaphore(1);
 
-	private ArrayBlockingQueue<MessageX> buffer; // FIFO
-	private Semaphore nonVide = new Semaphore(0); // Condition de consommation
-
-	private Semaphore nonPlein; // Condition de production
-	private Semaphore mutexIn = new Semaphore(1); // Protection pour le partage
-	private Semaphore mutexOut = new Semaphore(1); // des données
-	
 	private Consommateur cons[];
 
+	/**
+	 * Le constructeur du buffer
+	 * 
+	 * @param ob
+	 *            L'observateur du professeur
+	 * @param capacity
+	 *            La capacité du buffer
+	 * @param c
+	 *            Le tableau contenant tout les consommateurs
+	 */
 	public ProdCons(Observateur ob, int capacity, Consommateur c[]) {
 		this.ob = ob;
 		this.capacity = capacity;
 		buffer = new ArrayBlockingQueue<MessageX>(this.capacity);
 
 		nonPlein = new Semaphore(this.capacity);
-		cons=c;
+		cons = c;
 	}
 
-	@Override
-	// Retourne le nombre de message déjà ajouté dans le tampon
+	/**
+	 * Le nombre de message dans le buffer
+	 * 
+	 * @return le nombre de message déjà ajouté dans le buffer
+	 */
 	public int enAttente() {
 		return buffer.size();
 	}
 
-	@Override
-	// Recupère un message dans le tampon
+	/**
+	 * Bloque tant qu'il n'est pas possible de retirer puis retire un message de
+	 * tête du buffer
+	 * 
+	 * @param arg0
+	 *            Le consommateur du message
+	 * @return Le message en tête du buffer
+	 * @throws Exception
+	 * @throws InterruptedException
+	 */
 	public Message get(_Consommateur arg0) throws Exception, InterruptedException {
 		try {
 			nonVide.acquire();
@@ -53,7 +98,7 @@ public class ProdCons implements Tampon {
 		int nbex;
 		synchronized (this) {
 			message = buffer.iterator().next();
-			nbex=message.getNbEx();
+			nbex = message.getNbEx();
 			if (nbex > 1) {
 				message.decrement();
 				ob.retraitMessage(arg0, message);
@@ -63,23 +108,30 @@ public class ProdCons implements Tampon {
 				this.debloquer(cons);
 			}
 		}
-		
+
 		mutexOut.release();
 		if (nbex > 1) {
 			nonVide.release();
-		}else{
+		} else {
 			nonPlein.release();
 		}
 
-		
 		message.getProd().getSem().release();
-		
+
 		return message;
 	}
 
-
-	@Override
-	// Ajoute un message dans le tampon
+	/**
+	 * Bloque tant qu'il n'est pas possible d'ajouter et ajoute un message en
+	 * fin de buffer
+	 * 
+	 * @param arg0
+	 *            Le producteur du message
+	 * @param arg1
+	 *            Le message produit
+	 * @throws Exception
+	 * @throws InterruptedException
+	 */
 	public void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
 
 		try {
@@ -88,8 +140,8 @@ public class ProdCons implements Tampon {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
-		synchronized(this){
+
+		synchronized (this) {
 
 			buffer.add((MessageX) arg1);
 			ob.depotMessage(arg0, arg1);
@@ -99,15 +151,18 @@ public class ProdCons implements Tampon {
 
 	}
 
-	@Override
-	// Capacité maximale du tampon
+	/**
+	 * La taille du buffer
+	 * 
+	 * @return La capacité du buffer
+	 */
 	public int taille() {
 		return capacity;
 	}
-	
-	public void debloquer(Consommateur c[]){
-		for(int i=0; i< c.length;i++){
-			if(c[i].getSem().hasQueuedThreads()){
+
+	public void debloquer(Consommateur c[]) {
+		for (int i = 0; i < c.length; i++) {
+			if (c[i].getSem().hasQueuedThreads()) {
 				c[i].getSem().release();
 			}
 		}

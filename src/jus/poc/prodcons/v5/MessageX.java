@@ -12,17 +12,18 @@ public class MessageX implements Message {
 	 * Le message
 	 */
 	private String msg;
-	
+
 	/**
 	 * Création d'un message
+	 * 
 	 * @param msg
-	 * 		Le message
+	 *            Le message
 	 */
 	public MessageX(String msg) {
 		this.msg = msg;
 
 	}
-	
+
 	/**
 	 * 
 	 */

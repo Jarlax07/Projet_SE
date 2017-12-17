@@ -9,16 +9,50 @@ import jus.poc.prodcons.Message;
 import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons._Consommateur;
 
+/**
+ * 
+ * @author AUBERT Vincent et COURTIAL Julien
+ *
+ */
 public class Consommateur extends Acteur implements _Consommateur {
 
+	/**
+	 * Le buffer associé au programme
+	 */
 	private ProdCons buffer;
+	/**
+	 * Le nombre de messages consommé par le consommateur
+	 */
 	private int nbmsg;
+	/**
+	 * La variable aléatoire de temps
+	 */
 	private Aleatoire time;
+	/**
+	 * L'observateur du professeur
+	 */
 	private Observateur ob;
-	
-	//Semaphore représentant le contrainte de non consommation tant que tous les exemplaires du message n'ont pas été
+
+	/**
+	 * Semaphore lié à la contrainte : un consommateur ne consomme plus tant que
+	 * tout les exemplaire du message ne sont pas consommé
+	 */
 	private Semaphore contrainte = new Semaphore(0);
 
+	/**
+	 * 
+	 * Le constructeur d'un consommateur
+	 * 
+	 * @param observateur
+	 *            L'observateur du professeur
+	 * @param moyenneTempsDeTraitement
+	 *            Le temps moyen de consommation
+	 * @param deviationTempsDeTraitement
+	 *            La déviation du temps moyen de consommation
+	 * @param buffer
+	 *            Le buffer associé au programme
+	 * @throws ControlException
+	 */
 	protected Consommateur(Observateur observateur, int moyenneTempsDeTraitement, int deviationTempsDeTraitement,
 			ProdCons buffer) throws ControlException {
 		super(Acteur.typeConsommateur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
@@ -31,12 +65,18 @@ public class Consommateur extends Acteur implements _Consommateur {
 		this.setDaemon(true);
 	}
 
-	@Override
-	// Renvoi le nombre de message deja consommer
+	/**
+	 * Renvoie le nombre de message consommé
+	 * 
+	 * @return Le nombre de message déjà consommé
+	 */
 	public int nombreDeMessages() {
 		return nbmsg;
 	}
 
+	/**
+	 * 
+	 */
 	public void run() {
 		int t = 0;
 
@@ -51,10 +91,9 @@ public class Consommateur extends Acteur implements _Consommateur {
 				e1.printStackTrace();
 			}
 
-
 			try {
 				msg = buffer.get(this);
-				if(((MessageX)msg).getNbEx()>1){
+				if (((MessageX) msg).getNbEx() > 1) {
 					contrainte.acquire();
 				}
 				System.out.println(msg);
@@ -67,13 +106,18 @@ public class Consommateur extends Acteur implements _Consommateur {
 				e.printStackTrace();
 
 			}
-			
+
 			Thread.yield();
 		}
 
 	}
-	
-	public Semaphore getSem(){
+
+	/**
+	 * Renvoie le sémaphore lié au consommateur
+	 * 
+	 * @return Le semaphore lié au consommateur
+	 */
+	public Semaphore getSem() {
 		return contrainte;
 	}
 

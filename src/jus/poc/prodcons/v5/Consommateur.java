@@ -7,7 +7,6 @@ import jus.poc.prodcons.Message;
 import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons._Consommateur;
 
-
 /**
  * 
  * @author AUBERT Vincent et COURTIAL Julien
@@ -31,19 +30,19 @@ public class Consommateur extends Acteur implements _Consommateur {
 	 * L'observateur du professeur
 	 */
 	private Observateur ob;
-	
+
 	/**
 	 * 
 	 * Le constructeur d'un consommateur
 	 * 
 	 * @param observateur
-	 * 		L'observateur du professeur
+	 *            L'observateur du professeur
 	 * @param moyenneTempsDeTraitement
-	 * 		Le temps moyen de consommation
+	 *            Le temps moyen de consommation
 	 * @param deviationTempsDeTraitement
-	 * 		La déviation du temps moyen de consommation
+	 *            La déviation du temps moyen de consommation
 	 * @param buffer
-	 * 		Le buffer associé au programme
+	 *            Le buffer associé au programme
 	 * @throws ControlException
 	 */
 	protected Consommateur(Observateur observateur, int moyenneTempsDeTraitement, int deviationTempsDeTraitement,
@@ -60,13 +59,13 @@ public class Consommateur extends Acteur implements _Consommateur {
 
 	/**
 	 * Renvoie le nombre de message consommé
-	 * @return
-	 * 		Le nombre de message déjà consommé
+	 * 
+	 * @return Le nombre de message déjà consommé
 	 */
 	public int nombreDeMessages() {
 		return nbmsg;
 	}
-	
+
 	/**
 	 * 
 	 */

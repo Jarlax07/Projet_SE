@@ -8,37 +8,80 @@ import java.util.Properties;
 import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons.Simulateur;
 
+/**
+ * 
+ * @author AUBERT Vincent et COURTIAL Julien
+ *
+ */
 public class TestProdCons extends Simulateur {
+	/**
+	 * Le nombre de producteurs
+	 */
 	protected int nbProd;
+	/**
+	 * Le nombre de consommateurs
+	 */
 	protected int nbCons;
+	/**
+	 * La capacité du buffer
+	 */
 	protected int nbBuffer;
+	/**
+	 * Le temps moyen entre chaque production
+	 */
 	protected int tempsMoyenProduction;
+	/**
+	 * La déviation du temps moyen entre chaque production
+	 */
 	protected int deviationTempsMoyenProduction;
+	/**
+	 * Le temps moyen entre chaque consommation
+	 */
 	protected int tempsMoyenConsommation;
+	/**
+	 * La déviation du temps moyen entre chaque consommation
+	 */
 	protected int deviationTempsMoyenConsommation;
+	/**
+	 * Le nombre moyen de production
+	 */
 	protected int nombreMoyenDeProduction;
+	/**
+	 * La déviation du nombre moyen de production
+	 */
 	protected int deviationNombreMoyenDeProduction;
+	/**
+	 * Le nombre moyen du nombre d'exemplaires de messages
+	 */
 	protected int nombreMoyenNbExemplaire;
+	/**
+	 * La déviation du nombre moyen du nombre d'exemplaires de messages
+	 */
 	protected int deviationNombreMoyenNbExemplaire;
-
+	/**
+	 * L'observateur du professeur
+	 */
 	protected Observateur ob;
 
+	/**
+	 * 
+	 * @param observateur
+	 *            Notre observateur
+	 */
 	public TestProdCons(Observateur observateur) {
 		super(observateur);
 		ob = observateur;
 	}
 
-	
 	/**
+	 * Programme principal
 	 * 
-	 * 
-	 * @require
-	 * 		nombreMoyenNbExemplaire + deviationNombreMoyenNbExemplaire < nbCons
+	 * @require nombreMoyenNbExemplaire + deviationNombreMoyenNbExemplaire <
+	 *          nbCons
 	 */
 	protected void run() throws Exception {
-		// le corps de votre programme principal
 
-		// On récupère les variables dans un fichier xml
+		// Récupère les variables à partir d'un fichier xml
 		init("jus/poc/prodcons/options/options.xml");
 
 		if (nombreMoyenNbExemplaire + deviationNombreMoyenNbExemplaire > nbCons) {
@@ -57,14 +100,14 @@ public class TestProdCons extends Simulateur {
 
 			ob.init(nbProd, nbCons, nbBuffer);
 
-			// On créer et on démarre les consommateurs
+			// Créer et démarre les consommateurs
 			for (int i = 0; i < nbCons; i++) {
 				cons[i] = new Consommateur(ob, tempsMoyenConsommation, deviationTempsMoyenConsommation, buffer);
 				cons[i].start();
 				ob.newConsommateur(cons[i]);
 			}
 
-			// On créé et on démarre les producteurs
+			// Créer et démarre les producteurs
 			for (int i = 0; i < nbProd; i++) {
 				prod[i] = new Producteur(ob, tempsMoyenProduction, deviationTempsMoyenProduction, buffer,
 						nombreMoyenDeProduction, deviationNombreMoyenDeProduction, nombreMoyenNbExemplaire,
@@ -73,7 +116,7 @@ public class TestProdCons extends Simulateur {
 				ob.newProducteur(prod[i]);
 			}
 
-			// On boucle tant que tout ce qui doit être produit n'a pas été
+			// Boucle tant que tout les messages n'ont pas été produit et
 			// consommé
 			while (!(sum_prod(prod, nbProd) == sum_cons(cons, nbCons))) {
 			}
@@ -83,7 +126,15 @@ public class TestProdCons extends Simulateur {
 		}
 	}
 
-	// Calcule la somme des messages à produire par les producteurs
+	/**
+	 * Calcule la somme du nombre de messages des producteurs
+	 * 
+	 * @param p
+	 *            Le tableau contenant tout les producteurs.
+	 * @param taille
+	 *            La taille du tableau.
+	 * @return Le nombre de messages que les producteurs doivent produire
+	 */
 	public int sum_prod(Producteur p[], int taille) {
 		int somme = 0;
 		for (int i = 0; i < taille; i++) {
@@ -92,7 +143,15 @@ public class TestProdCons extends Simulateur {
 		return somme;
 	}
 
-	// Calcule la somme des messages déjà consommé par les consommateurs
+	/**
+	 * Calcule la somme du nombre de message consommé par les producteurs
+	 * 
+	 * @param c
+	 *            Le tableau contenant tout les consommateurs.
+	 * @param taille
+	 *            La taille du tableau.
+	 * @return Le nombre de messages que les consommateurs ont déjà consommé.
+	 */
 	public int sum_cons(Consommateur c[], int taille) {
 		int somme = 0;
 		for (int i = 0; i < taille; i++) {
