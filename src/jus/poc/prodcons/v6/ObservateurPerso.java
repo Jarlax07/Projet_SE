@@ -1,8 +1,6 @@
 package jus.poc.prodcons.v6;
 
 import jus.poc.prodcons.Message;
-import jus.poc.prodcons._Consommateur;
-import jus.poc.prodcons._Producteur;
 
 /**
  * 

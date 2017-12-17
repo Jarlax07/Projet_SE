@@ -15,27 +15,26 @@ import jus.poc.prodcons._Producteur;
  *
  */
 public class ProdCons implements Tampon {
-	
-	
+
 	/**
 	 * L'observateur du professeur
 	 */
 	private Observateur ob;
-	
+
 	/**
 	 * Notre observateur
 	 */
 	private ObservateurPerso ob2;
-	
+
 	/**
 	 * La capacité du buffer
 	 */
 	private int capacity;
-	
+
 	/**
 	 * Le buffer
 	 */
-	private ArrayBlockingQueue<Message> buffer; 
+	private ArrayBlockingQueue<Message> buffer;
 	/**
 	 * Le semaphore représentant la condition de consommation.
 	 */
@@ -45,23 +44,23 @@ public class ProdCons implements Tampon {
 	 */
 	private Semaphore nonPlein;
 	/**
-	 * Le semaphore de protection du partage de donnée pour la methode put
+	 * Le semaphore de protection du partage de données pour la methode put
 	 */
 	private Semaphore mutexIn = new Semaphore(1);
 	/**
-	 * Le semaphore de protection du partage de donnée pour la méthode get.
+	 * Le semaphore de protection du partage de données pour la méthode get.
 	 */
 	private Semaphore mutexOut = new Semaphore(1);
-	
+
 	/**
 	 * Le constructeur du buffer
 	 * 
 	 * @param ob
-	 * 		L'observateur du professeur
+	 *            L'observateur du professeur
 	 * @param ob2
-	 * 		Notre observateur
+	 *            Notre observateur
 	 * @param capacity
-	 * 		La capacité du buffer
+	 *            La capacité du buffer
 	 */
 	public ProdCons(Observateur ob, ObservateurPerso ob2, int capacity) {
 		this.ob = ob;
@@ -72,9 +71,9 @@ public class ProdCons implements Tampon {
 		nonPlein = new Semaphore(this.capacity);
 	}
 
-	
 	/**
 	 * Le nombre de message dans le buffer
+	 * 
 	 * @return le nombre de message déjà ajouté dans le buffer
 	 */
 	public int enAttente() {
@@ -82,11 +81,12 @@ public class ProdCons implements Tampon {
 	}
 
 	/**
-	 * Bloque tant qu'il n'est pas possible de retirer puis retire un message de tête du buffer
+	 * Bloque tant qu'il n'est pas possible de retirer puis retire un message de
+	 * tête du buffer
+	 * 
 	 * @param arg0
-	 * 		Le consommateur du message
-	 * @return
-	 * 		Le message en tête du buffer
+	 *            Le consommateur du message
+	 * @return Le message en tête du buffer
 	 * @throws Exception
 	 * @throws InterruptedException
 	 */
@@ -112,11 +112,13 @@ public class ProdCons implements Tampon {
 	}
 
 	/**
-	 * Bloque tant qu'il n'est pas possible d'ajouter et ajoute un message en fin de buffer
+	 * Bloque tant qu'il n'est pas possible d'ajouter et ajoute un message en
+	 * fin de buffer
+	 * 
 	 * @param arg0
-	 * 		Le producteur du message
+	 *            Le producteur du message
 	 * @param arg1
-	 * 		Le message produit
+	 *            Le message produit
 	 * @throws Exception
 	 * @throws InterruptedException
 	 */
@@ -141,8 +143,8 @@ public class ProdCons implements Tampon {
 
 	/**
 	 * La taille du buffer
-	 * @return 
-	 * 		La capacité du buffer
+	 * 
+	 * @return La capacité du buffer
 	 */
 	public int taille() {
 		return capacity;

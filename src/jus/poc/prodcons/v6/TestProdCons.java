@@ -14,7 +14,7 @@ import jus.poc.prodcons.Simulateur;
  *
  */
 public class TestProdCons extends Simulateur {
-	
+
 	/**
 	 * Le nombre de producteurs
 	 */
@@ -73,9 +73,9 @@ public class TestProdCons extends Simulateur {
 	 * 
 	 * 
 	 * @param observateur
-	 * 		L'observateur du professeur
+	 *            L'observateur du professeur
 	 * @param observateur2
-	 * 		Notre observateur
+	 *            Notre observateur
 	 */
 	public TestProdCons(Observateur observateur, ObservateurPerso observateur2) {
 		super(observateur);
@@ -86,7 +86,7 @@ public class TestProdCons extends Simulateur {
 	/**
 	 * Programme principal
 	 */
-	
+
 	protected void run() throws Exception {
 
 		// Récupère les variables à partir d'un fichier xml
@@ -129,12 +129,11 @@ public class TestProdCons extends Simulateur {
 	/**
 	 * Calcule la somme du nombre de messages des producteurs
 	 * 
-	 * @param p 
-	 * 		Le tableau contenant tout les producteurs.
+	 * @param p
+	 *            Le tableau contenant tout les producteurs.
 	 * @param taille
-	 * 		La taille du tableau.
-	 * @return
-	 * 		Le nombre de messages que les producteurs doivent produire
+	 *            La taille du tableau.
+	 * @return Le nombre de messages que les producteurs doivent produire
 	 */
 	public int sum_prod(Producteur p[], int taille) {
 		int somme = 0;
@@ -143,16 +142,15 @@ public class TestProdCons extends Simulateur {
 		}
 		return somme;
 	}
-	
+
 	/**
 	 * Calcule la somme du nombre de message consommé par les producteurs
 	 * 
 	 * @param c
-	 * 		Le tableau contenant tout les consommateurs.
+	 *            Le tableau contenant tout les consommateurs.
 	 * @param taille
-	 * 		La taille du tableau.
-	 * @return
-	 * 		Le nombre de messages que les consommateurs ont déjà consommé.
+	 *            La taille du tableau.
+	 * @return Le nombre de messages que les consommateurs ont déjà consommé.
 	 */
 	public int sum_cons(Consommateur c[], int taille) {
 		int somme = 0;
