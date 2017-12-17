@@ -28,6 +28,13 @@ public class TestProdCons extends Simulateur {
 		ob = observateur;
 	}
 
+	
+	/**
+	 * 
+	 * 
+	 * @require
+	 * 		nombreMoyenNbExemplaire + deviationNombreMoyenNbExemplaire < nbCons
+	 */
 	protected void run() throws Exception {
 		// le corps de votre programme principal
 

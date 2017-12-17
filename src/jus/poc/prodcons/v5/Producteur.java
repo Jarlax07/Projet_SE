@@ -44,7 +44,7 @@ public class Producteur extends Acteur implements _Producteur {
 			}
 
 			try {
-				msg= new MessageX("Bonjour"+i);
+				msg= new MessageX("Bonjour "+i + " "+ this.getId());
 				ob.productionMessage(this, msg, t);
 				buffer.put(this, msg);
 			} catch (InterruptedException e) {

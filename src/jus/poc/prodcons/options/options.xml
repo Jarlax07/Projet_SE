@@ -6,10 +6,10 @@ Cette configuration ...
 </comment>
 <entry key="nbCons">10</entry>
 <entry key="nbProd">5</entry>
-<entry key="nbBuffer">1</entry>
-<entry key="tempsMoyenProduction">100</entry>
+<entry key="nbBuffer">5</entry>
+<entry key="tempsMoyenProduction">1000</entry>
 <entry key="deviationTempsMoyenProduction">10</entry>
-<entry key="tempsMoyenConsommation">100</entry>
+<entry key="tempsMoyenConsommation">1000</entry>
 <entry key="deviationTempsMoyenConsommation">10</entry>
 <entry key="nombreMoyenDeProduction">10</entry>
 <entry key="deviationNombreMoyenDeProduction">1</entry>
