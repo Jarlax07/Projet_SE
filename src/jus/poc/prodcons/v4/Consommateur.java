@@ -86,7 +86,7 @@ public class Consommateur extends Acteur implements _Consommateur {
 			// On attend un certain temps avant de consommer
 			try {
 				t = time.next();
-				sleep(t * 100);
+				sleep(t);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}

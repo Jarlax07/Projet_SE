@@ -73,13 +73,13 @@ public class Producteur extends Acteur implements _Producteur {
 
 			// On attend un certain temps avant de produire un message
 			try {
-				sleep(time.next() * 100);
+				sleep(time.next());
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
 
 			try {
-				buffer.put(this, new MessageX("Bonjour" + i));
+				buffer.put(this, new MessageX("Bonjour " + i + " " + this.getId()));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (Exception e) {

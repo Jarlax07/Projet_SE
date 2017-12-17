@@ -73,7 +73,7 @@ public class Producteur extends Acteur implements _Producteur {
 
 			// On attend un certain temps avant de produire un message
 			try {
-				sleep(time.next() * 100);
+				sleep(time.next());
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
