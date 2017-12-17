@@ -8,28 +8,54 @@ import jus.poc.prodcons.Tampon;
 import jus.poc.prodcons._Consommateur;
 import jus.poc.prodcons._Producteur;
 
+/**
+ * 
+ * @author AUBERT Vincent et COURTIAL Julien
+ *
+ */
 public class ProdCons implements Tampon {
 
-	private Observateur ob;
+	/**
+	 * La capacité du buffer
+	 */
 	private int capacity;
-	private boolean fini = false;
+	/**
+	 * Le buffer
+	 */
+	private ArrayBlockingQueue<Message> buffer;
 
-	private ArrayBlockingQueue<Message> buffer; // FIFO
-
+	/**
+	 * Le constructeur du buffer
+	 * 
+	 * @param ob
+	 *            L'observateur du professeur
+	 * @param capacity
+	 *            La capacité du buffer
+	 */
 	public ProdCons(Observateur ob, int capacity) {
-		this.ob = ob;
 		this.capacity = capacity;
 		buffer = new ArrayBlockingQueue<Message>(this.capacity);
 	}
 
-	@Override
-	// Retourne le nombre de message déjà ajouté dans le tampon
+	/**
+	 * Le nombre de message dans le buffer
+	 * 
+	 * @return le nombre de message déjà ajouté dans le buffer
+	 */
 	public int enAttente() {
 		return buffer.size();
 	}
 
-	@Override
-	// Recupère un message dans le tampon
+	/**
+	 * Bloque tant qu'il n'est pas possible de retirer puis retire un message de
+	 * tête du buffer
+	 * 
+	 * @param arg0
+	 *            Le consommateur du message
+	 * @return Le message en tête du buffer
+	 * @throws Exception
+	 * @throws InterruptedException
+	 */
 	synchronized public Message get(_Consommateur arg0) throws Exception, InterruptedException {
 
 		// Tant que le tampon est vide et que le programme n'est pas fini on
@@ -48,8 +74,17 @@ public class ProdCons implements Tampon {
 		return msg;
 	}
 
-	@Override
-	// Ajoute un message dans le tampon
+	/**
+	 * Bloque tant qu'il n'est pas possible d'ajouter et ajoute un message en
+	 * fin de buffer
+	 * 
+	 * @param arg0
+	 *            Le producteur du message
+	 * @param arg1
+	 *            Le message produit
+	 * @throws Exception
+	 * @throws InterruptedException
+	 */
 	synchronized public void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
 
 		// Tant que le buffer est complet, attendre
@@ -67,12 +102,13 @@ public class ProdCons implements Tampon {
 
 	}
 
-	@Override
-	// Capacité maximale du tampon
+	/**
+	 * La taille du buffer
+	 * 
+	 * @return La capacité du buffer
+	 */
 	public int taille() {
 		return capacity;
 	}
-
-
 
 }
